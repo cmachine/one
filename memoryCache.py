@@ -45,35 +45,47 @@ class MemoryCache(CacheProtocol[T]):
             If found (& unexpired), returns the value -- which may be None -- and True.
             If not found (or expired), returns None and False.
         """
+        print(self._items)
+        print(key)
         with self._lock:
             # Do we have this key in our cache?
             try:
                 item = self._items[key]
+                print("found")
             except KeyError:
                 return None, False
 
             # TODO: Check for expiry, and clear if expired.
 
             # Mark as most recently read.
+            print("marking " + key)
             self._items.move_to_end(key, last=True)
 
-        return item.value, False
+        return item.value, True
 
     def set(self, key: str, value: T, expire_after_seconds: Optional[float] = None) -> None:
         """
             Caches the given value (which may be None) under the given key,
             optionally expiring after the given number of seconds.
         """
+        print("setting")
         with self._lock:
             # Add item.
             # TODO: Store expiry too, and clear when expired.
             item = MemoryCacheItem(key=key, value=value)
             self._items[key] = item
-            self._items.move_to_end(key, last=False)
-
-            # If we're over capacity, evict least recently read items.
+            #print(self._items[key])
+            self._items.move_to_end(key, last=True)
+            print( self._items)
+            #print("after move " + str(self._items[key]))
+            #print("max =" + str(self._max_items))
+            # If we're over capacity, evict least recently read items.\
+            #print(len(self._items))
+            #print(self._max_items)
             while self._max_items > 0 and len(self._items) > self._max_items:
-                self._items.popitem(last=True)
+               
+                i = self._items.popitem(last=False)
+                print("evicted " +str(i))
 
     def clear(self, key: str) -> bool:
         """

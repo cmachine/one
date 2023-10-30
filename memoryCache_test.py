@@ -39,7 +39,7 @@ class TestMemoryCache(unittest.TestCase):
 
         cache.set("a", a)
         cache.set("b", b)
-
+        print("testing cache")
         self.assert_cached_equals(cache, "a", a)
         self.assert_cached_equals(cache, "b", b)
 
@@ -90,7 +90,7 @@ class TestMemoryCache(unittest.TestCase):
         d = "D"
 
         cache.set("d", d)
-
+        print("testing b")   
         self.assert_not_in_cache(cache, "b")
 
         self.assert_cached_equals(cache, "a", a)
